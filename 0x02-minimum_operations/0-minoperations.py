@@ -1,35 +1,25 @@
--- Creates a stored procedure ComputeAverageWeightedScoreForUsers that
--- computes and store the average weighted score for all students.
-DROP PROCEDURE IF EXISTS ComputeAverageWeightedScoreForUsers;
-DELIMITER $$
-CREATE PROCEDURE ComputeAverageWeightedScoreForUsers ()
-BEGIN
-    ALTER TABLE users ADD total_weighted_score INT NOT NULL;
-    ALTER TABLE users ADD total_weight INT NOT NULL;
+#!/usr/bin/python3
+""" Module for 0-minoperations"""
 
-    UPDATE users
-        SET total_weighted_score = (
-            SELECT SUM(corrections.score * projects.weight)
-            FROM corrections
-                INNER JOIN projects
-                    ON corrections.project_id = projects.id
-            WHERE corrections.user_id = users.id
-            );
 
-    UPDATE users
-        SET total_weight = (
-            SELECT SUM(projects.weight)
-                FROM corrections
-                    INNER JOIN projects
-                        ON corrections.project_id = projects.id
-                WHERE corrections.user_id = users.id
-            );
-
-    UPDATE users
-        SET users.average_score = IF(users.total_weight = 0, 0, users.total_weighted_score / users.total_weight);
-    ALTER TABLE users
-        DROP COLUMN total_weighted_score;
-    ALTER TABLE users
-        DROP COLUMN total_weight;
-END $$
-DELIMITER ;
+def minOperations(n):
+    """
+    minOperations
+    Gets fewest # of operations needed to result in exactly n H characters
+    """
+    # all outputs should be at least 2 char: (min, Copy All => Paste)
+    if (n < 2):
+        return 0
+    ops, root = 0, 2
+    while root <= n:
+        # if n evenly divides by root
+        if n % root == 0:
+            # total even-divisions by root = total operations
+            ops += root
+            # set n to the remainder
+            n = n / root
+            # reduce root to find remaining smaller vals that evenly-divide n
+            root -= 1
+        # increment root until it evenly-divides n
+        root += 1
+    return ops
